@@ -1,3 +1,18 @@
+#
+# So most of this was written by a non-CS person, but it shows the basic method for not only communicating with one DBS1280 sensor, but multiple 
+# I think he used 9 here, which is around the number we'd like to use
+#
+# The code for outputing temps is also here which will help set up either the LCD Display or IOT backend we set up 
+#
+# If we refactor and optimize this we could get it down to probably like 3-4 functions 
+#
+# the amazing guy even put a schematic of how to wire up multiple sensors to a single rasberry pi 
+#
+# And if we could see here if we can also implement the data class as well as the heating functions I think this might be all we need
+
+# https://www.hackster.io/vinayyn/multiple-ds18b20-temp-sensors-interfacing-with-raspberry-pi-d8a6b0
+
+
 import os
 import glob
 import time
