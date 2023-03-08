@@ -118,7 +118,7 @@ class Temp_zone:
         
         
         
-        GPIO.output(self.GPIO_signal_pin, self.threshold_flag)
+        GPIO.output(self.gpio_signal_pin, self.threshold_flag)
         
         
     def get_temp(self): 
