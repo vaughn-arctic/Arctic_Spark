@@ -8,8 +8,9 @@ Created on Thu Feb 17 16:07:08 2022
 
 """
 - Create Device Name get code
+        (BORO is working on this) 
 
-- Create Data structure code
+- finish this data structure
 
 - Create functions code (Main) 
 
@@ -40,7 +41,10 @@ sensor_Ids to pass them each to an array of unique Temp_Zone class instances
 import time
 import Rpi.GPIO as GPIO
 
-
+"""
+!!! Look at updateing the inputs required to generate a zone..... 
+    see if sensor_ID + device can be replaced by the full sys/bus '28*' pulled directly from the device folder
+"""
 class Temp_zone: 
     def __init__(self, sensor_ID, device,  gpio_signal_pin, low_temp_value):
         '''
