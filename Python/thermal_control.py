@@ -42,7 +42,7 @@ import Rpi.GPIO as GPIO
 
 
 class Temp_zone: 
-    def __init__(self, sensor_ID, device,  GPIO_pin, low_temp_value):
+    def __init__(self, sensor_ID, device,  gpio_signal_pin, low_temp_value):
         '''
         !!! This one may need to be updated based upon how we gather all the sensor_IDs
         from the root directory
@@ -75,7 +75,7 @@ class Temp_zone:
         
         self.sensor_ID = sensor_ID # 28-bit sensor ID value for direct assignment
         self.device = device        # root directory of sensors
-        self.GPIO_pin = GPIO_pin   # dedicated GPIO output pin -> to relay
+        self.gpio_signal_pin = gpio_signal_pin   # dedicated GPIO output pin -> to relay
         self.current_temp = 0       # initialized to 0, updates on get_temp()
         self.temp_logs = {
                             }       # stores get_temp() value : current_time
@@ -105,7 +105,7 @@ class Temp_zone:
         
         
         
-    def GPIO_output(self):
+    def gpio_pin_output(self):
         '''
         Sends signal to dedicated GPIO_pin, to activate relay allowing heater assigned to 
         this thermal zone to turn on
@@ -118,7 +118,7 @@ class Temp_zone:
         
         
         
-        GPIO.output(self.GPIO_pin, self.threshold_flag)
+        GPIO.output(self.GPIO_signal_pin, self.threshold_flag)
         
         
     def get_temp(self): 
