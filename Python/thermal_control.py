@@ -113,34 +113,38 @@ class Temp_zone:
         
         
     def get_temp(self): 
+        
+        try:
+                
+                with open(self.sensor_ID, 'r') as f:  # read in current data from dedicated sensor
+                        lines = f.readlines()
+                        f.close()
 
-        f = open(self.sensor_ID, 'r')  # read in current data from dedicated sensor
-        lines = f.readlines()
-        f.close()
-        
-        equals_pos = lines[1].find('t=')         # string manipulation to access raw temperature data
-       
-        temp_string = lines[1][equals_pos+2:]
-        temp_c = float(temp_string) / 1000.0
-        temp_f = temp_c * 9.0 / 5.0 + 32.0      # conversion to F (check ability to provide both)
-        
-        self.current_temp = temp_f
-        
-        t = time.localtime()
-        current_time = time.strftime("%H:%M:%S", t)
+                        equals_pos = lines[1].find('t=')         # string manipulation to access raw temperature data
+                        temp_string = lines[1][equals_pos+2:]    # which is the last 4 values of the first string returned from the 
+                        temp_c = float(temp_string) / 1000.0     # sensor, typecasted to a floating integer
+                        temp_f = temp_c * 9.0 / 5.0 + 32.0      # conversion to F (check ability to provide both)
 
-        self.temp_logs[current_time] = self.current_temp
+                        self.current_temp = temp_f
+
+                        t = time.localtime()
+                        current_time = time.strftime("%H:%M:%S", t)
+                        self.temp_logs[current_time] = self.current_temp        # update temperature log with current reading
+                        
+        except FileNotFoundError:
+            print(f"Sensor file for {self.sensor_id} not found.") 
         
         
     def return_temp(self): 
-     
         return self.current_temp
 
     def return_status(self):
         return self.threshold_flag
         
       
-def arctic_spark(arr, time_out):
+
+
+def arctic_spark(arr, time_out: int):
         '''
         Main runtime function that itterates through sensor_array and performs required sensing, updated, output and data 
         recording functions for each temp_zone
