@@ -16,7 +16,7 @@ Created on Thu Feb 17 16:07:08 2022
 
 - GLOBAL VARIABLES
     - int temp low
-    - string device name
+    - string device name  ( locateed in base_dir) 
     - int run
     
     
@@ -35,7 +35,7 @@ device_folder8 = glob.glob(base_dir + '28*')[8]
 !!! Need to rework this into a novel function for collecting and assigning all unique
 sensor_Ids to pass them each to an array of unique Temp_Zone class instances    
     
-
+!!! DART/FLUTTER Control Requirements need to be implemented !!!
 
 """
 import time
@@ -74,20 +74,23 @@ class Temp_zone:
 
         '''
         
-        
-        
-        
-        self.sensor_ID = sensor_ID # 28-bit sensor ID value for direct assignment
-        self.device = device        # root directory of sensors
-        self.gpio_signal_pin = gpio_signal_pin   # dedicated GPIO output pin -> to relay
-        self.current_temp = 0       # initialized to 0, updates on get_temp()
+        self.sensor_ID = sensor_ID                              # 28-bit sensor ID value for direct assignment
+        self.device = device                                    # root directory of sensors
+        self.gpio_signal_pin = gpio_signal_pin                  # dedicated GPIO output pin -> to relay
+        self.current_temp = 0                                   # initialized to 0, updates on get_temp()
         self.temp_logs = {
-                            }       # stores get_temp() value : current_time
+                            }                                    # stores get_temp() value : current_time
         
-        self.threshold = low_temp_value + 5 # creates a 5 F degree buffer
-        self.threshold_flag = False  # Flags if out of temperature bound and activates 
-                                    #GPIO output pin 
-                        
+        self.threshold = low_temp_value + ( 0.075 * low_temp_value)  # creates a 7.5% buffer above the minumum threshold 
+                                                                     # This ensures heaters wont shut off at low_temp_value zone beyond 
+                                                                     # !!!!! x =-y^{3} + 120
+                                                                     # Rework this algebra so that lower low_temp_values have higher temp
+                                        
+        self.threshold_flag = False                                     # Flags if out of temperature bound and activates 
+                                                                        # GPIO output pin 
+                                                                        #
+                                                                        # Initialize all to False prior to first iteration
+
                                     
                         
                                     
@@ -112,7 +115,8 @@ class Temp_zone:
     def gpio_pin_output(self):
         '''
         Sends signal to dedicated GPIO_pin, to activate relay allowing heater assigned to 
-        this thermal zone to turn on
+        this thermal zone to turn on. 
+        Otherwise if zone is within tolerance & activated, the zone will be turned off
 
         Returns
         -------
@@ -120,15 +124,13 @@ class Temp_zone:
 
         '''
         
-        
-        
         GPIO.output(self.gpio_signal_pin, self.threshold_flag)
         
         
     def get_temp(self): 
         
         '''
-        readlines() to get the temp
+        R
         
         '''
         
@@ -138,8 +140,7 @@ class Temp_zone:
         f.close()
         
         equals_pos = lines[1].find('t=')
-        
-   
+       
         temp_string = lines[1][equals_pos+2:]
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
