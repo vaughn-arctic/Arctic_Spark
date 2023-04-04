@@ -26,21 +26,12 @@ import os
 import Rpi.GPIO as GPIO
 
 sensor_locations = glob.glob('/sys/bus/w1/devices/28-*/w1_slave')
-sensor_array = []
-temp_zone_lows = []
-
-
-"""
-!!! Look at updateing the inputs required to generate a zone..... 
-    see if sensor_ID + device can be replaced by the full sys/bus '28*' pulled directly from the device folder
-"""
-
-
-# 1. Create sensor pin arrea
+global sensor_array = []
+global temp_zone_lows = []
 
 GPIO.setmode(GPIO.Board)
 GPIO.setwarnings(False)
-gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put pins available on raspberry pi 
+global gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put pins available on raspberry pi 
 
 '''
                                 Still working on the spatial requirments of this. 
@@ -144,15 +135,50 @@ class Temp_zone:
     def return_temp(self): 
      
         return self.current_temp
+
+    def return_status(self):
+        return self.threshold_flag
         
       
 def arctic_spark(arr, time_out):
+        '''
+        Main runtime function that itterates through sensor_array and performs required sensing, updated, output and data 
+        recording functions for each temp_zone
+        
+        User defined timeout value (want to check 
+        '''
         for zone in arr:
                 zone.get_temp()
                 zone.temp_check()
                 zone.gpio_output()
+                printf("Zone is currently {} degrees\n".format(zone.return_temp)
                 
+                '''       
+               if zone.return_status == True:
+                       printf("Zone is outside of threshold and is currently being heated\n\n")
+               else:
+                       printf("Zone is within tolerance and is not being heated\n\n")
+                '''
         time.sleep(time_out)
         
+def get_sensor_config(): 
+        '''
+        Using user input values and global pin array, this function creates an array of Temp_Zone class instances
+        with corresponding data'''
+        i = 0
+        for sensor in sensor_locations:
+                sensor_array.append(Temp_zone(sensor, gpio_pin_array[i], temp_zone_lows[i]
+                i += 1
         
+       
+if __name__ == '__main__': 
         
+      ### Prompt user for 8 zones
+      # create zone_array
+      # while loop arctic spark 
+        # exit on keyboard input
+                                              
+      ''' 
+      This main program is simply for testing.
+      There is more complexity to be coded here as we develop our UI and are able to integrate it to this control system
+      '''
