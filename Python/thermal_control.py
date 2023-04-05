@@ -121,17 +121,6 @@ def arctic_spark(arr):
         time.sleep(3)
         
                        
-                       '''
-def set_sensor_config(): 
-       
-        Using user input values and global pin array, this function creates an array of Temp_Zone class instances
-        with corresponding data
-        
-        i = 0
-        for sensor in sensor_locations:
-                sensor_array.append(Temp_zone(sensor, gpio_pin_array[i], temp_zone_lows[i]))
-                i += 1
-        '''
 
                        
 if __name__ == "__main__": 
@@ -160,6 +149,9 @@ if __name__ == "__main__":
     
                                      
                                      
+    # !!! To Do
+    # Flutter/Python control integration
+    # Implement multiple zone modes (8, 16, 24) 
                                      
                                      
                                      
