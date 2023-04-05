@@ -4,18 +4,18 @@
 import time
 import glob
 import os
-import Rpi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 sensor_locations = glob.glob('/sys/bus/w1/devices/28-*/w1_slave')
 GPIO.setmode(GPIO.Board)
 GPIO.setwarnings(False)
-global gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put pins available on raspberry pi 
-
+gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put pins available on raspberry pi 
+error_logs = { } 
 
 class Temp_zone: 
-    def __init__(self, sensor_ID, zone_ID gpio_signal_pin, low_temp_value):
+    def __init__(self, sensor_ID, zone_ID, gpio_signal_pin, low_temp_value):
         '''
         Parameters
         ----------
@@ -40,14 +40,10 @@ class Temp_zone:
         self.zone_ID = zone_ID
         self.gpio_signal_pin = gpio_signal_pin                         
         self.current_temp = 0                                          
-        self.temp_logs = { }                                            
+        self.temp_logs = { } 
+        
         
         self.threshold = low_temp_value + ( 0.125 * low_temp_value)    
-        # creates a 12.5% buffer above the minumum threshold 
-        # This ensures heaters will activate before and wont shut off at once reaching minimums
-        
-        # !!!!! x =-y^{3} + 120
-        # Rework this algebra so that lower low_temp_values have higher adjusted thresholds
                                         
         self.threshold_flag = False                                       
                                     
@@ -75,8 +71,7 @@ class Temp_zone:
                 
                 with open(self.sensor_ID, 'r') as f:  
                         lines = f.readlines()
-                        f.close()
-
+                       
                         temp_in_string = lines[1].find('t=')         
                         temp_string = lines[1][temp_in_string+2:]    
                         temp_c = float(temp_string) / 1000.0     
@@ -89,7 +84,10 @@ class Temp_zone:
                         self.temp_logs[current_time] = self.current_temp        
                         
         except FileNotFoundError:
-            print(f"Sensor file for {self.sensor_id} not found.") 
+            t = time.localtime()
+            current_time = time.strftime("%H:%M:%S", t)
+            errors.append[current_time] = self.sensor_ID
+            print(f"Sensor file for {self.sensor_ID} not found.") 
         
         
     def return_temp(self): 
@@ -101,23 +99,19 @@ class Temp_zone:
 
 def arctic_spark(arr):
         '''
-        Main runtime function that itterates through sensor_array and performs required sensing, updated, output and data 
-        recording functions for each temp_zone
+        Main runtime function that itterates through sensor_array of Temp_zones and 
+        calls the methods to 
+        1. recieve data from corresponding sensor and update values
+        2. compare tempature 
         
-        User defined timeout value (want to check w/ Ben about requirements
+        
         '''
         for zone in arr:
                 zone.get_temp()
                 zone.temp_check()
-                zone.gpio_output()
-                print("Zone {} is currently {} degrees\n".format(zone.zone_ID, zone.return_temp)
+                zone.gpio_pin_output()
+                print("Zone {} is currently {} degrees\n".format(zone.zone_ID, zone.return_temp()))
                 
-                  
-               #if zone.return_status == True:
-               #       print("Zone is outside of threshold and is currently being heated\n\n")
-               #else:
-               #        print("Zone is within tolerance and is not being heated\n\n")
-                ''
         time.sleep(3)
         
                        
@@ -142,7 +136,7 @@ if __name__ == "__main__":
      
     try: 
         while(True):
-            artcic_spark(sensor_array)
+            arctic_spark(sensor_array)
                       
     except KeyboardInterrupt:
         print("Operation Ended")
