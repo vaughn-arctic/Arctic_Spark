@@ -11,7 +11,7 @@ os.system('modprobe w1-therm')
 sensor_locations = glob.glob('/sys/bus/w1/devices/28-*/w1_slave')
 GPIO.setmode(GPIO.Board)
 GPIO.setwarnings(False)
-gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put pins available on raspberry pi 
+gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated pins available on raspberry pi 
 error_logs = { } 
 
 class Temp_zone: 
@@ -86,7 +86,7 @@ class Temp_zone:
         except FileNotFoundError:
             t = time.localtime()
             current_time = time.strftime("%H:%M:%S", t)
-            errors.append[current_time] = self.sensor_ID
+            error_logs[current_time] = self.sensor_ID
             print(f"Sensor file for {self.sensor_ID} not found.") 
         
         
@@ -141,12 +141,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Operation Ended")
     
-                                     
-                                     
-    # !!! To Do
-    # Flutter/Python control integration
-    # Implement multiple zone modes (8, 16, 24) 
-                                     
                                      
                                      
                                      
