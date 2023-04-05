@@ -25,10 +25,11 @@ import glob
 import os
 import Rpi.GPIO as GPIO
 
+os.system('modprobe w1-gpio')
+os.system('modprobe w1-therm')
 sensor_locations = glob.glob('/sys/bus/w1/devices/28-*/w1_slave')
-global sensor_array = []
-global temp_zone_lows = []
-
+sensor_array = []
+temp_zone_lows = []
 GPIO.setmode(GPIO.Board)
 GPIO.setwarnings(False)
 global gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put pins available on raspberry pi 
@@ -44,11 +45,6 @@ global gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put 
 
 '''
 
-
-# get sensor_lsit
-# itterate sensor list 
-
-# for 
 class Temp_zone: 
     def __init__(self, sensor_ID, gpio_signal_pin, low_temp_value):
         '''
@@ -75,7 +71,7 @@ class Temp_zone:
 
         '''
         
-        self.sensor_ID = sensor_ID                                      # 28-bit sensor ID + 
+        self.sensor_ID = sensor_ID                                      # String
         self.gpio_signal_pin = gpio_signal_pin                          # dedicated GPIO output pin -> to relay
         self.current_temp = 0                                           # initialized to 0, updates on get_temp()
         self.temp_logs = { }                                           # stores get_temp() value : current_time
@@ -113,17 +109,17 @@ class Temp_zone:
         
         
     def get_temp(self): 
-        
+        ### Accessess raw temperature data in the form of a 2 line string from the DBS
         try:
                 
                 with open(self.sensor_ID, 'r') as f:  # read in current data from dedicated sensor
                         lines = f.readlines()
                         f.close()
 
-                        equals_pos = lines[1].find('t=')         # string manipulation to access raw temperature data
-                        temp_string = lines[1][equals_pos+2:]    # which is the last 4 values of the first string returned from the 
+                        temp_in_string = lines[1].find('t=')         # string manipulation to access raw temperature data from sensor
+                        temp_string = lines[1][temp_in_string+2:]    # which is the last 4 values of the first string returned from the 
                         temp_c = float(temp_string) / 1000.0     # sensor, typecasted to a floating integer
-                        temp_f = temp_c * 9.0 / 5.0 + 32.0      # conversion to F (check ability to provide both)
+                        temp_f = (temp_c * 1.8) + 32             # conversion to F (check requirement to provide both)
 
                         self.current_temp = temp_f
 
