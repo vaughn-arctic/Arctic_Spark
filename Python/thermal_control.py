@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 sensor_locations = glob.glob('/sys/bus/w1/devices/28-*/w1_slave')
-GPIO.setmode(GPIO.Board)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
 gpio_pin_array = [ 22, 29, 31, 32, 35, 36, 37, 38]   # dedicated out-put pins available on raspberry pi 
 error_logs = { } 
