@@ -111,6 +111,8 @@ def arctic_spark(arr):
                 zone.temp_check()
                 zone.gpio_pin_output()
                 print("Zone {} is currently {} degrees\n".format(zone.zone_ID, zone.return_temp()))
+                if zone.return_status() == True: 
+                    print("Actively Heating Zone {}\n".format(zone.zone_ID))
                 
         time.sleep(3)
         
@@ -120,13 +122,22 @@ def arctic_spark(arr):
 if __name__ == "__main__": 
                        
                        
+                       
     sensor_array = []                   
     temp_zone_lows = [] 
     i = 0
+    sensor_list_size = 0
     
-    for x in range (0,8):
+    for sensor in sensor_locations:
+        sensor_list_size += 1
+    
+    for pin in gpio_pin_array: 
+        GPIO.setup(pin, GPIO.OUT, initial=0)
+    
+    for x in range (0,sensor_list_size()):
         user_input = int(input("Enter the minimum temperature(F) for zone {}:\t".format(x+1)))
         temp_zone_lows.append(user_input)
+        
         
     for sensor in sensor_locations:
         sensor_array.append(Temp_zone(sensor, (i+1), gpio_pin_array[i], temp_zone_lows[i]))
